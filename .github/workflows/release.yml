@@ -2,6 +2,11 @@ name: Release from tag
 
 on:
   workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to publish (e.g. v3.13.0)'
+        required: false
+        default: 'v3.13.0'
   push:
     tags:
       - 'v*'
@@ -45,7 +50,8 @@ jobs:
         env:
           REPO_SLUG: ${{ github.repository }}
         run: |
-          $tag = $env:GITHUB_REF_NAME
+          $inputTag = "${{ github.event.inputs.tag }}"
+          $tag = if (-not [string]::IsNullOrWhiteSpace($inputTag)) { $inputTag } else { $env:GITHUB_REF_NAME }
           if (-not $tag.StartsWith("v")) {
               throw "Release tag must start with 'v'."
           }
@@ -77,6 +83,7 @@ jobs:
           }
 
           "version=$actualVersion" >> $env:GITHUB_OUTPUT
+          "release_tag=$tag" >> $env:GITHUB_OUTPUT
 
       - name: Prepare release notes
         shell: pwsh
@@ -84,15 +91,15 @@ jobs:
           $bundle = Get-Content -LiteralPath "patches-bundle.json" -Raw | ConvertFrom-Json
           $notes = [string]$bundle.description
           if ([string]::IsNullOrWhiteSpace($notes)) {
-              $notes = "Public mirror release for $env:GITHUB_REF_NAME."
+              $notes = "Public release for ${{ steps.metadata.outputs.release_tag }}."
           }
           Set-Content -LiteralPath "release-notes.md" -Value $notes -Encoding utf8
 
       - name: Publish GitHub release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.ref_name }}
+          tag_name: ${{ steps.metadata.outputs.release_tag }}
           body_path: release-notes.md
-          prerelease: ${{ contains(github.ref_name, '-dev.') }}
+          prerelease: ${{ contains(steps.metadata.outputs.release_tag, '-dev.') }}
           files: |
             patches/build/libs/patches-${{ steps.metadata.outputs.version }}.mpp
