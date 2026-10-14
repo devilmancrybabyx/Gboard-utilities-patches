@@ -1,29 +1,44 @@
-<h1 align="center">Gboard Patches</h1>
+<h1 align="center">Gboard Utilities Patches</h1>
 
 <p align="center">
-  Morphe patches for Gboard with a mix of global improvements and Taiwan-focused enhancements.
+  Morphe patches for Gboard maintained by <strong>devilmancrybabyx</strong>, featuring custom gallery integration, recent stickers & GIFs limit overrides, and the unified <em>z-patches</em> in-app settings menu.
 </p>
 
 <p align="center">
-  <a href="https://github.com/jasonwu1994/Gboard-patches/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/jasonwu1994/Gboard-patches?display_name=tag&label=Release&style=for-the-badge"></a>
-  <a href="https://github.com/jasonwu1994/Gboard-patches"><img alt="Total downloads" src="https://img.shields.io/github/downloads/jasonwu1994/Gboard-patches/total?label=Downloads&style=for-the-badge"></a>
-  <a href="https://morphe.software/add-source?github=jasonwu1994/Gboard-patches"><img alt="Add to Morphe" src="https://img.shields.io/badge/Morphe-Add%20Source-00A8FF?style=for-the-badge"></a>
-  <a href="https://github.com/jasonwu1994/Gboard-patches"><img alt="GitHub stars" src="https://img.shields.io/github/stars/jasonwu1994/Gboard-patches?style=social"></a>
-</p>
-
-<p align="center">
-  <a href="https://ko-fi.com/jasonwu1994"><img height="40" alt="Buy me a coffee on Ko-fi" src="https://storage.ko-fi.com/cdn/kofi5.png?v=3"></a>
+  <a href="https://github.com/devilmancrybabyx/Gboard-utilities-patches/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/devilmancrybabyx/Gboard-utilities-patches?display_name=tag&label=Release&style=for-the-badge"></a>
+  <a href="https://github.com/devilmancrybabyx/Gboard-utilities-patches"><img alt="Total downloads" src="https://img.shields.io/github/downloads/devilmancrybabyx/Gboard-utilities-patches/total?label=Downloads&style=for-the-badge"></a>
+  <a href="https://morphe.software/add-source?github=devilmancrybabyx/Gboard-utilities-patches"><img alt="Add to Morphe" src="https://img.shields.io/badge/Morphe-Add%20Source-00A8FF?style=for-the-badge"></a>
+  <a href="https://github.com/devilmancrybabyx/Gboard-utilities-patches"><img alt="GitHub stars" src="https://img.shields.io/github/stars/devilmancrybabyx/Gboard-utilities-patches?style=social"></a>
 </p>
 
 ## Overview
 
-Gboard Patches is a public Morphe source for a curated set of Gboard enhancements, including both global usability improvements and Taiwan-focused features for local input habits and day-to-day use.
+**Gboard Utilities Patches** by **devilmancrybabyx** extends Google Gboard via Morphe with essential power-user utilities, full control over media recents, a custom device gallery section for stickers and GIFs, and a dedicated **z-patches** settings dashboard placed right inside Gboard.
+
+This project is built and maintained by devilmancrybabyx, incorporating custom patch utilities and the foundational Morphe patch framework from Jason Wu.
 
 ## Included Patches
 
 ### Project-Built Features
 
 Features designed and built by this project rather than simply unlocking an existing Gboard flag.
+
+<details>
+  <summary><code>Recent Stickers & GIFs Limit</code></summary>
+
+  Removes Gboard's hardcoded 10-item limit for recent stickers and GIFs. Patches the `RecentImages` constructor bytecode dynamically so all recent stores query `recent_content_suggestion_share_max_count`. Fully configurable on the fly (1 to 5,000 items) via the in-app **z-patches** settings menu or Gboard's Flag Editor with zero re-patching.
+</details>
+
+<details>
+  <summary><code>Custom Gallery for GIFs & Stickers</code></summary>
+
+  Adds a dedicated custom gallery tab directly inside Gboard's emoji, stickers & GIFs panel:
+  - Add any picture or GIF from your phone gallery using the system photo picker.
+  - Organize photos into customizable categories (create, rename, delete).
+  - Tap any picture to immediately share and commit it into the active text field via Gboard's FileProvider.
+  - Persistent storage in app directory (`files/custom_gallery/`).
+  - Toggle and configure directly from the **z-patches** settings section.
+</details>
 
 <details>
   <summary><code>Clipboard Enhancements</code></summary>
@@ -298,26 +313,27 @@ Features tailored to Traditional Chinese and Zhuyin input workflows.
 
 Add this repository as a Morphe source:
 
-- [Open in Morphe](https://morphe.software/add-source?github=jasonwu1994/Gboard-patches)
-- Or manually add `https://github.com/jasonwu1994/Gboard-patches`
+- [Open in Morphe](https://morphe.software/add-source?github=devilmancrybabyx/Gboard-utilities-patches)
+- Or manually add `https://github.com/devilmancrybabyx/Gboard-utilities-patches`
 
 ## Build
 
-Before running Gradle locally, authenticate to Morphe's GitHub Packages registry with either:
+Before running Gradle locally or on CI, authenticate to Morphe's GitHub Packages registry with either:
 
+- `GPR_USER` and `GPR_KEY` (with `read:packages` permission) passed as parameters or set as GitHub repository secrets
 - `gpr.user` and `gpr.key` in `~/.gradle/gradle.properties`
 - `GITHUB_ACTOR` and `GITHUB_TOKEN` as environment variables
 
 Build the Android patch bundle:
 
 ```powershell
-.\gradlew.bat :patches:buildAndroid
+.\gradlew.bat :patches:buildAndroid -Pgpr.user="<user>" -Pgpr.key="<token>"
 ```
 
 Regenerate patch metadata:
 
 ```powershell
-.\gradlew.bat generatePatchesList
+.\gradlew.bat generatePatchesList -Pgpr.user="<user>" -Pgpr.key="<token>"
 ```
 
 Generated outputs:
@@ -325,6 +341,11 @@ Generated outputs:
 - `patches/build/libs/*.mpp`
 - `patches-list.json`
 - `patches-bundle.json`
+
+## Credits & Attribution
+
+- Maintained and developed by **devilmancrybabyx**
+- Based on the foundational Gboard patches framework created by [Jason Wu](https://github.com/jasonwu1994/Gboard-patches)
 
 ## License
 
