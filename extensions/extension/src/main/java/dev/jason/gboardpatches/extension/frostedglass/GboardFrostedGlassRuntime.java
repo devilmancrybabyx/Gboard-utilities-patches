@@ -49,6 +49,7 @@ public final class GboardFrostedGlassRuntime {
             return;
         }
         activeService = new WeakReference<>(service);
+        dev.jason.gboardpatches.extension.customgallery.GboardCustomGalleryRuntime.rememberService(service);
         Window window = windowOf(service);
         if (window == null) {
             return;

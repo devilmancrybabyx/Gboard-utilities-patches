@@ -33,6 +33,7 @@ public final class GboardPatchesSettingsFeatureRegistry {
         addIfAvailable(context, features, new GboardSettingsHomepageSettingsFeature());
         addIfAvailable(context, features, new GboardBackupRestoreSettingsFeature(context));
         addIfAvailable(context, features, new GboardDeveloperOptionsSettingsFeature(context));
+        addIfAvailable(context, features, new dev.jason.gboardpatches.extension.settings.zpatches.GboardZPatchesSettingsFeature());
         return Collections.unmodifiableList(features);
     }
 

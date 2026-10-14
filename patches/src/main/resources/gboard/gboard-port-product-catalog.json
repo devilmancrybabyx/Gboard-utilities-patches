@@ -386,6 +386,30 @@
       ]
     },
     {
+      "feature_id": "custom_gallery",
+      "public_patch_name": "Custom Gallery for GIFs & Stickers",
+      "feature_marker": "dev.jason.gboardpatches.feature.custom_gallery",
+      "target_family_ids": [
+        "customgallery"
+      ],
+      "migration_scope": "version-sensitive",
+      "consumer_files": [
+        "patches/src/main/kotlin/dev/jason/gboardpatches/patches/gboard/features/customgallery/GboardCustomGalleryCorpusBytecodePatch.kt",
+        "patches/src/main/kotlin/dev/jason/gboardpatches/patches/gboard/features/customgallery/GboardCustomGalleryFeatureMarkerPatch.kt",
+        "patches/src/main/kotlin/dev/jason/gboardpatches/patches/gboard/registry/GboardPatchRegistry.kt"
+      ],
+      "contributions": [
+        {
+          "contribution_id": "custom_gallery.resources",
+          "anchor_family_id": "resource_only",
+          "phase": "resource",
+          "order": 100,
+          "required_bindings": [],
+          "runtime_calls": []
+        }
+      ]
+    },
+    {
       "feature_id": "custom_symbols",
       "public_patch_name": "Custom Symbols",
       "feature_marker": "dev.jason.gboardpatches.feature.custom_symbols",
@@ -1273,6 +1297,38 @@
           ],
           "runtime_calls": [
             "QUICK_INSERT_RUNTIME_APPLY_FLAG_VALUE"
+          ]
+        }
+      ]
+    },
+    {
+      "feature_id": "recent_images_limit",
+      "public_patch_name": "Recent Stickers & GIFs Limit",
+      "feature_marker": "dev.jason.gboardpatches.feature.recent_images_limit",
+      "target_family_ids": [
+        "recentimageslimit",
+        "flag.reader"
+      ],
+      "migration_scope": "version-sensitive",
+      "consumer_files": [
+        "patches/src/main/kotlin/dev/jason/gboardpatches/patches/gboard/features/recentimageslimit/GboardRecentImagesLimitBytecodePatch.kt",
+        "patches/src/main/kotlin/dev/jason/gboardpatches/patches/gboard/features/recentimageslimit/GboardRecentImagesLimitFeatureMarkerPatch.kt",
+        "patches/src/main/kotlin/dev/jason/gboardpatches/patches/gboard/features/recentimageslimit/GboardRecentImagesLimitFlagValuePatch.kt",
+        "patches/src/main/kotlin/dev/jason/gboardpatches/patches/gboard/registry/GboardPatchRegistry.kt",
+        "patches/src/main/kotlin/dev/jason/gboardpatches/patches/gboard/shared/GboardFlagFamilyComposer.kt"
+      ],
+      "contributions": [
+        {
+          "contribution_id": "recent_images_limit.flag",
+          "anchor_family_id": "flag_bool_getter",
+          "phase": "after_stock_result",
+          "order": 550,
+          "required_bindings": [
+            "flag_bool_getter",
+            "flag_name_field"
+          ],
+          "runtime_calls": [
+            "RECENT_IMAGES_LIMIT_RUNTIME_APPLY_OVERRIDDEN_FLAG_VALUE"
           ]
         }
       ]

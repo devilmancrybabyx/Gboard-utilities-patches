@@ -57,7 +57,8 @@ public final class GboardSymbolFooterOrderRuntime {
             }
             List<String> configuredOrder = resolveConfiguredOrder(
                     handles.expressionCorpusManagerContext(receiver));
-            return reorderExpressionCorpusList(handles, corpusList, configuredOrder);
+            Object reordered = reorderExpressionCorpusList(handles, corpusList, configuredOrder);
+            return dev.jason.gboardpatches.extension.customgallery.GboardCustomGalleryRuntime.appendCustomCorpusItem(receiver, reordered);
         } catch (Throwable throwable) {
             Log.w(TAG, "Failed to reorder " + LOG_LABEL + " corpus list", throwable);
             return corpusList;

@@ -1,0 +1,41 @@
+name: CI Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Cache Gradle
+        uses: burrunan/gradle-cache-action@v3
+
+      - name: Make Gradle wrapper executable
+        run: chmod +x ./gradlew
+
+      - name: Build and Test
+        env:
+          GPR_USER: ${{ secrets.GPR_USER || github.repository_owner }}
+          GPR_KEY: ${{ secrets.GPR_KEY || secrets.MORPHE_PACKAGES_TOKEN || secrets.GITHUB_TOKEN }}
+          GITHUB_ACTOR: ${{ secrets.GPR_USER || github.repository_owner }}
+          GITHUB_TOKEN: ${{ secrets.GPR_KEY || secrets.MORPHE_PACKAGES_TOKEN || secrets.GITHUB_TOKEN }}
+        run: ./gradlew :patches:buildAndroid generatePatchesList check -Pgpr.user="${{ secrets.GPR_USER || github.repository_owner }}" -Pgpr.key="${{ secrets.GPR_KEY || secrets.MORPHE_PACKAGES_TOKEN || secrets.GITHUB_TOKEN }}"

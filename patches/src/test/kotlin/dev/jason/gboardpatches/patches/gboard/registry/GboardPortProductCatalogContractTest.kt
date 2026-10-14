@@ -21,6 +21,7 @@ import dev.jason.gboardpatches.patches.gboard.features.featureflags.gboardKeySha
 import dev.jason.gboardpatches.patches.gboard.features.flowmode.gboardFlowModeFlagValuePatch
 import dev.jason.gboardpatches.patches.gboard.features.ocr.gboardOcrFlagValuePatch
 import dev.jason.gboardpatches.patches.gboard.features.quickinsert.gboardQuickInsertFlagValuePatch
+import dev.jason.gboardpatches.patches.gboard.features.recentimageslimit.gboardRecentImagesLimitFlagValuePatch
 import dev.jason.gboardpatches.patches.gboard.features.longpressquickactions.gboardLongPressQuickActionsSoftKeyPatch
 import dev.jason.gboardpatches.patches.gboard.features.spacebarlogo.gboardSpacebarLogoSoftKeyPatch
 import dev.jason.gboardpatches.patches.gboard.features.toprowswipe.gboardTopRowSwipeSoftKeyPatch
@@ -197,7 +198,7 @@ class GboardPortProductCatalogContractTest {
     }
 
     @Test
-    fun flagFamilyDeclaresSeventeenSelectedOnlyComposerCallsInCanonicalOrder() {
+    fun flagFamilyDeclaresEighteenSelectedOnlyComposerCallsInCanonicalOrder() {
         val flagContributions = features().flatMap { feature ->
             feature.getAsJsonArray("contributions")
                 .map { contribution -> contribution.asJsonObject }
@@ -207,18 +208,18 @@ class GboardPortProductCatalogContractTest {
                 .map { contribution -> feature["feature_id"].asString to contribution }
         }.sortedBy { (_, contribution) -> contribution["order"].asInt }
 
-        assertEquals(17, flagContributions.size)
+        assertEquals(18, flagContributions.size)
         assertEquals(
             listOf(
                 10, 20, 30, 40, 100, 200, 300, 400,
-                500, 600, 700, 800, 900, 1000, 1100, 1200, 1300,
+                500, 550, 600, 700, 800, 900, 1000, 1100, 1200, 1300,
             ),
             flagContributions.map { (_, contribution) -> contribution["order"].asInt },
         )
         val runtimeCalls = flagContributions.map { (_, contribution) ->
             contribution.getAsJsonArray("runtime_calls").first().asString
         }
-        assertEquals(17, runtimeCalls.distinct().size)
+        assertEquals(18, runtimeCalls.distinct().size)
         assertFalse("FEATURE_FLAGS_RUNTIME_APPLY_OVERRIDDEN_FLAG_VALUE" in runtimeCalls)
         flagContributions.forEach { (_, contribution) ->
             assertEquals(
@@ -663,6 +664,7 @@ class GboardPortProductCatalogContractTest {
             "clipboard_custom_character_limit" to "version-sensitive",
             "clipboard_enhancements" to "version-sensitive",
             "close_proactive_suggestions" to "version-sensitive",
+            "custom_gallery" to "version-sensitive",
             "custom_theme" to "version-sensitive",
             "custom_symbols" to "version-sensitive",
             "developer_options" to "version-sensitive",
@@ -687,6 +689,7 @@ class GboardPortProductCatalogContractTest {
             "long_press_editing_shortcuts" to "version-sensitive",
             "package_rename" to "generic",
             "quick_insert" to "version-sensitive",
+            "recent_images_limit" to "version-sensitive",
             "rounded_keyboard_panel" to "version-sensitive",
             "settings_homepage_override" to "version-sensitive",
             "simple_calculator" to "version-sensitive",
@@ -745,6 +748,14 @@ class GboardPortProductCatalogContractTest {
                 "gboardClipboardContentLimitFlagValuePatch",
                 FEATURE_ROOT + "clipboardcontentlimit/GboardClipboardContentLimitFlagValuePatch.kt",
                 FEATURE_ROOT + "clipboardcontentlimit/GboardClipboardContentLimitFeatureMarkerPatch.kt",
+            ),
+            FlagFeatureContract(
+                "recent_images_limit",
+                GboardFlagFamilyFeature.RECENT_IMAGES_LIMIT,
+                gboardRecentImagesLimitFlagValuePatch,
+                "gboardRecentImagesLimitFlagValuePatch",
+                FEATURE_ROOT + "recentimageslimit/GboardRecentImagesLimitFlagValuePatch.kt",
+                FEATURE_ROOT + "recentimageslimit/GboardRecentImagesLimitFeatureMarkerPatch.kt",
             ),
             FlagFeatureContract(
                 "close_proactive_suggestions",

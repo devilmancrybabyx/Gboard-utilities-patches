@@ -2701,6 +2701,20 @@ public final class GboardPatchesSettingsActivity extends Activity
         if (restoreNavigationPathFromIntent(intent)) {
             return true;
         }
+        String targetFeature = intent.getStringExtra("target_feature");
+        if (targetFeature != null && !targetFeature.isEmpty()) {
+            for (GboardPatchesSettingsContract.Feature f : features) {
+                if ("z_patches".equals(targetFeature) && f instanceof dev.jason.gboardpatches.extension.settings.zpatches.GboardZPatchesSettingsFeature) {
+                    runOnUiThread(() -> {
+                        scrollState.resetForDirectPath(0);
+                        requestScrollPositionOnNextScreenApply(0);
+                        applyOrchestration(settingsOrchestrator.accept(
+                                GboardPatchesSettingsOrchestrator.Event.openFeature(f)));
+                    });
+                    return true;
+                }
+            }
+        }
         return false;
     }
 

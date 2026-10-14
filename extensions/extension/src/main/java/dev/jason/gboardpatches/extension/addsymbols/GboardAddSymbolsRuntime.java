@@ -322,6 +322,7 @@ public final class GboardAddSymbolsRuntime {
             return;
         }
         try {
+            dev.jason.gboardpatches.extension.customgallery.GboardCustomGalleryRuntime.onExpressionCorpusFooterTabClick(footerTabClickConsumer, corpusItem);
             restorePendingStockEmoticonTabSwitchStateIfExpired();
             ClassLoader classLoader = footerTabClickConsumer.getClass().getClassLoader();
             if (classLoader == null) {

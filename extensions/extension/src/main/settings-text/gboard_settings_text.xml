@@ -3226,8 +3226,60 @@
         <translation locale="en">Paste</translation>
         <translation locale="zh-Hant">貼上</translation>
     </string>
-    <string name="gboard_edit_ap_error">
-        <translation locale="en">Editing buttons settings unavailable. Reopen settings and try again.</translation>
-        <translation locale="zh-Hant">編輯按鈕設定無法載入，請重新開啟設定再試一次。</translation>
+    <string name="gboard_patches_z_patches_title">
+        <translation locale="en">z-patches</translation>
+        <translation locale="zh-Hant">z-patches</translation>
+    </string>
+    <string name="gboard_patches_z_patches_summary">
+        <translation locale="en">Recent stickers &amp; GIFs limit and Custom Gallery settings.</translation>
+        <translation locale="zh-Hant">最近貼圖與 GIF 上限及自訂相簿設定。</translation>
+    </string>
+    <string name="gboard_patches_recent_images_limit_section">
+        <translation locale="en">Recent Stickers &amp; GIFs</translation>
+        <translation locale="zh-Hant">最近貼圖與 GIF</translation>
+    </string>
+    <string name="gboard_patches_recent_images_limit_title">
+        <translation locale="en">Recent stickers &amp; GIFs limit</translation>
+        <translation locale="zh-Hant">最近貼圖與 GIF 數量上限</translation>
+    </string>
+    <string name="gboard_patches_recent_images_limit_summary">
+        <translation locale="en">Current limit: %s (Default: 10). Controls maximum stored items across all recent stores.</translation>
+        <translation locale="zh-Hant">目前上限：%s（預設值：10）。控制所有最近紀錄儲存空間的上限。</translation>
+    </string>
+    <string name="gboard_patches_recent_images_limit_dialog_title">
+        <translation locale="en">Set limit (1-5000)</translation>
+        <translation locale="zh-Hant">設定上限 (1-5000)</translation>
+    </string>
+    <string name="gboard_patches_recent_images_limit_dialog_hint">
+        <translation locale="en">Enter count (1-5000)</translation>
+        <translation locale="zh-Hant">輸入數量 (1-5000)</translation>
+    </string>
+    <string name="gboard_patches_custom_gallery_section">
+        <translation locale="en">Custom Gallery</translation>
+        <translation locale="zh-Hant">自訂相簿</translation>
+    </string>
+    <string name="gboard_patches_custom_gallery_enabled_title">
+        <translation locale="en">Show custom gallery tab</translation>
+        <translation locale="zh-Hant">顯示自訂相簿分頁</translation>
+    </string>
+    <string name="gboard_patches_custom_gallery_enabled_summary">
+        <translation locale="en">Show custom gallery tab in emoji/stickers/GIFs panel.</translation>
+        <translation locale="zh-Hant">在表情符號/貼圖/GIF 面板中顯示自訂相簿分頁。</translation>
+    </string>
+    <string name="gboard_patches_custom_gallery_manage_categories_title">
+        <translation locale="en">Manage categories</translation>
+        <translation locale="zh-Hant">管理相簿分類</translation>
+    </string>
+    <string name="gboard_patches_custom_gallery_manage_categories_summary">
+        <translation locale="en">Create, rename, or delete gallery categories.</translation>
+        <translation locale="zh-Hant">建立、重新命名或刪除相簿分類。</translation>
+    </string>
+    <string name="gboard_patches_custom_gallery_add_image_title">
+        <translation locale="en">Add images from gallery</translation>
+        <translation locale="zh-Hant">從手機相簿新增圖片</translation>
+    </string>
+    <string name="gboard_patches_custom_gallery_add_image_summary">
+        <translation locale="en">Import pictures via system photo picker into active category.</translation>
+        <translation locale="zh-Hant">透過系統相片選擇器將圖片匯入目前分類。</translation>
     </string>
 </settings-text>

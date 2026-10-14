@@ -31,6 +31,12 @@ import dev.jason.gboardpatches.patches.gboard.features.clipboard.gboardClipboard
 import dev.jason.gboardpatches.patches.gboard.features.clipboard.gboardClipboardPrunePatch
 import dev.jason.gboardpatches.patches.gboard.features.clipboardcontentlimit.gboardClipboardContentLimitFeatureMarkerPatch
 import dev.jason.gboardpatches.patches.gboard.features.clipboardcontentlimit.gboardClipboardContentLimitFlagValuePatch
+import dev.jason.gboardpatches.patches.gboard.features.recentimageslimit.gboardRecentImagesLimitFeatureMarkerPatch
+import dev.jason.gboardpatches.patches.gboard.features.recentimageslimit.gboardRecentImagesLimitBytecodePatch
+import dev.jason.gboardpatches.patches.gboard.features.recentimageslimit.gboardRecentImagesLimitFlagValuePatch
+import dev.jason.gboardpatches.patches.gboard.features.customgallery.gboardCustomGalleryFeatureMarkerPatch
+import dev.jason.gboardpatches.patches.gboard.features.customgallery.gboardCustomGalleryCorpusBytecodePatch
+import dev.jason.gboardpatches.patches.gboard.shared.gboardZPatchesSettingsXmlPatch
 import dev.jason.gboardpatches.patches.gboard.features.closeproactivesuggestions.gboardCloseProactiveSuggestionsFeatureMarkerPatch
 import dev.jason.gboardpatches.patches.gboard.features.closeproactivesuggestions.gboardCloseProactiveSuggestionsFlagValuePatch
 import dev.jason.gboardpatches.patches.gboard.features.developeroptions.gboardDeveloperOptionsFeatureMarkerPatch
@@ -618,6 +624,43 @@ val gboardClipboardContentLimitPatch = gboardPublicResourcePatch(
 }
 
 @Suppress("unused")
+val gboardRecentImagesLimitPatch = gboardPublicResourcePatch(
+    featureId = "recent_images_limit",
+    name = "Recent Stickers & GIFs Limit",
+    description = "解除 Recent stickers & GIFs 10 張上限，使所有 recent store 一律讀取 recent_content_suggestion_share_max_count flag。\n" +
+        "Remove the 10-item limit for recent stickers and GIFs so all stores read the recent_content_suggestion_share_max_count flag.",
+    default = true
+) {
+    compatibleWith(COMPATIBILITY_GBOARD)
+
+    dependsOn(
+        gboardPatchesSettingsPatch,
+        gboardZPatchesSettingsXmlPatch,
+        gboardRecentImagesLimitFeatureMarkerPatch,
+        gboardRecentImagesLimitBytecodePatch,
+        gboardRecentImagesLimitFlagValuePatch
+    )
+}
+
+@Suppress("unused")
+val gboardCustomGalleryPatch = gboardPublicResourcePatch(
+    featureId = "custom_gallery",
+    name = "Custom Gallery for GIFs & Stickers",
+    description = "在表情符號/貼圖/GIF 面板加入自訂相簿分頁，可分類管理並直接傳送手機圖片。\n" +
+        "Add a custom gallery section in the emoji/stickers/GIFs panel to organize and share phone images.",
+    default = true
+) {
+    compatibleWith(COMPATIBILITY_GBOARD)
+
+    dependsOn(
+        gboardPatchesSettingsPatch,
+        gboardZPatchesSettingsXmlPatch,
+        gboardCustomGalleryFeatureMarkerPatch,
+        gboardCustomGalleryCorpusBytecodePatch
+    )
+}
+
+@Suppress("unused")
 val gboardWebClipboardPatch = gboardPublicResourcePatch(
     featureId = "web_clipboard",
     name = "Web Clipboard",
@@ -889,6 +932,8 @@ object GboardPublishedPatchCatalog {
         gboardSymbolsFooterOrderPatch,
         gboardClipboardEnhancementsPatch,
         gboardClipboardContentLimitPatch,
+        gboardRecentImagesLimitPatch,
+        gboardCustomGalleryPatch,
         gboardWebClipboardPatch,
         gboardLanFtpServerPatch,
         gboardDeviceIntelligencePatch,
