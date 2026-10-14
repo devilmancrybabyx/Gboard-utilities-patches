@@ -2709,7 +2709,7 @@ public final class GboardPatchesSettingsActivity extends Activity
                         scrollState.resetForDirectPath(0);
                         requestScrollPositionOnNextScreenApply(0);
                         applyOrchestration(settingsOrchestrator.accept(
-                                GboardPatchesSettingsOrchestrator.Event.openFeature(f)));
+                                GboardPatchesSettingsOrchestrator.Event.open(f)));
                     });
                     return true;
                 }

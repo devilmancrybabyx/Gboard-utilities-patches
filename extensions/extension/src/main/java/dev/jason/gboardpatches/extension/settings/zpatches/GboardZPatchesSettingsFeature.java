@@ -97,7 +97,10 @@ public final class GboardZPatchesSettingsFeature implements GboardPatchesSetting
 
         return new GboardPatchesSettingsContract.Screen(
                 "z-patches",
-                "Settings for Recent stickers limit and Custom Gallery",
+                "z-patches",
+                "z-patches",
+                "Recent stickers & GIFs limit and Custom Gallery settings.",
+                Collections.emptyList(),
                 Collections.unmodifiableList(sections));
     }
 
@@ -198,8 +201,8 @@ public final class GboardZPatchesSettingsFeature implements GboardPatchesSetting
         String active = GboardCustomGallerySettings.getActiveCategory(context);
         try {
             host.submit(h -> h.openBinaryDocument(new String[]{"image/*"}, doc -> {
-                if (doc != null && doc.data() != null) {
-                    File saved = GboardCustomGalleryStorage.saveImage(context, active, doc.name(), doc.data());
+                if (doc != null && doc.getData() != null) {
+                    File saved = GboardCustomGalleryStorage.saveImage(context, active, doc.getDisplayName(), doc.getData());
                     if (saved != null) {
                         Toast.makeText(context, "Saved image to " + active, Toast.LENGTH_SHORT).show();
                         GboardPatchesSettingsContract.refresh(host);

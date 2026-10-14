@@ -14,6 +14,7 @@ import dev.jason.gboardpatches.patches.gboard.shared.VerifiedTransformationPlan
 import dev.jason.gboardpatches.patches.gboard.shared.VerifiedTransformationState
 import dev.jason.gboardpatches.patches.gboard.shared.applyVerified
 import dev.jason.gboardpatches.patches.gboard.shared.isOpcode
+import dev.jason.gboardpatches.patches.gboard.shared.mutableClass
 import dev.jason.gboardpatches.patches.shared.Constants.COMPATIBILITY_GBOARD
 
 private const val TARGET_STORE_NAME_STRING = "recent_content_suggestion_shared"
@@ -33,22 +34,48 @@ internal val gboardRecentImagesLimitBytecodePatch = bytecodePatch(
 
 context(context: BytecodePatchContext)
 private fun patchRecentImagesLimit() = with(context) {
-    val matchingConstructors = classes.flatMap { clazz ->
-        clazz.methods.filter { method ->
-            method.name == "<init>" &&
-                method.parameterTypes == listOf("Landroid/content/Context;", STRING_CLASS) &&
-                method.implementation?.instructions?.any { instruction ->
-                    (instruction as? ReferenceInstruction)?.reference?.toString() == TARGET_STORE_NAME_STRING
-                } == true
+    var foundClassType: String? = null
+
+    classDefForEach { classDef ->
+        for (method in classDef.methods) {
+            if (method.name == "<init>" &&
+                method.parameterTypes == listOf("Landroid/content/Context;", STRING_CLASS)
+            ) {
+                val instructions = method.implementation?.instructions
+                if (instructions != null) {
+                    for (instruction in instructions) {
+                        if ((instruction as? ReferenceInstruction)?.reference?.toString() == TARGET_STORE_NAME_STRING) {
+                            check(foundClassType == null) {
+                                "Found multiple candidate RecentImages classes: $foundClassType and ${classDef.type}"
+                            }
+                            foundClassType = classDef.type
+                            break
+                        }
+                    }
+                }
+            }
         }
     }
 
-    check(matchingConstructors.size == 1) {
-        "Expected exactly one RecentImages constructor referencing '$TARGET_STORE_NAME_STRING', " +
-            "found ${matchingConstructors.size}: ${matchingConstructors.map { "${it.definingClass}-><init>" }}"
+    if (foundClassType == null) {
+        val fallbackClass = "Lgkk;"
+        try {
+            val candidate = mutableClass(fallbackClass)
+            if (candidate.methods.any { it.name == "<init>" && it.parameterTypes == listOf("Landroid/content/Context;", STRING_CLASS) }) {
+                foundClassType = fallbackClass
+            }
+        } catch (_: Throwable) {
+        }
     }
 
-    val targetMethod = matchingConstructors.single()
+    val targetClassType = checkNotNull(foundClassType) {
+        "Expected exactly one RecentImages constructor referencing '$TARGET_STORE_NAME_STRING', but none was found"
+    }
+
+    val mutableTargetClass = mutableClass(targetClassType)
+    val targetMethod = mutableTargetClass.methods.first {
+        it.name == "<init>" && it.parameterTypes == listOf("Landroid/content/Context;", STRING_CLASS)
+    }
     targetMethod.applyRecentImagesLimitTransformation()
 }
 

@@ -13,15 +13,12 @@ import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputContentInfo;
 import android.widget.Toast;
 
-import androidx.core.content.FileProvider;
-import androidx.core.view.inputmethod.InputConnectionCompat;
-import androidx.core.view.inputmethod.InputContentInfoCompat;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Method;
 
 public final class GboardCustomGalleryShare {
     private static final String TAG = "CustomGalleryShare";
@@ -45,7 +42,7 @@ public final class GboardCustomGalleryShare {
 
             // 2. Resolve FileProvider URI
             String authority = context.getPackageName() + ".fileprovider";
-            Uri contentUri = FileProvider.getUriForFile(context, authority, targetFile);
+            Uri contentUri = getFileProviderUri(context, authority, targetFile);
             String mimeType = resolveMimeType(targetFile.getName());
 
             // 3. Resolve active InputMethodService
@@ -69,16 +66,14 @@ public final class GboardCustomGalleryShare {
                     ClipDescription description = new ClipDescription(
                             targetFile.getName(),
                             new String[]{mimeType});
-                    InputContentInfoCompat inputContentInfoCompat = new InputContentInfoCompat(
+                    InputContentInfo inputContentInfo = new InputContentInfo(
                             contentUri,
                             description,
                             null);
 
-                    boolean committed = InputConnectionCompat.commitContent(
-                            inputConnection,
-                            editorInfo,
-                            inputContentInfoCompat,
-                            InputConnectionCompat.INPUT_CONTENT_GRANT_READ_URI_PERMISSION,
+                    boolean committed = inputConnection.commitContent(
+                            inputContentInfo,
+                            InputConnection.INPUT_CONTENT_GRANT_READ_URI_PERMISSION,
                             null);
 
                     if (committed) {
@@ -96,6 +91,23 @@ public final class GboardCustomGalleryShare {
             Toast.makeText(context, "Failed to share image", Toast.LENGTH_SHORT).show();
             return false;
         }
+    }
+
+    private static Uri getFileProviderUri(Context context, String authority, File targetFile) {
+        String[] providerClassNames = new String[]{
+                "androidx.core.content.FileProvider",
+                "com.google.android.libraries.inputmethod.fileprovider.CrashResistantFileProvider",
+                "android.support.v4.content.FileProvider"
+        };
+        for (String className : providerClassNames) {
+            try {
+                Class<?> clazz = Class.forName(className);
+                Method method = clazz.getMethod("getUriForFile", Context.class, String.class, File.class);
+                return (Uri) method.invoke(null, context, authority, targetFile);
+            } catch (Throwable ignored) {
+            }
+        }
+        return Uri.parse("content://" + authority + "/files/" + SHARE_CONTENT_DIR + "/" + targetFile.getName());
     }
 
     public static InputMethodService resolveInputMethodService(Context context) {

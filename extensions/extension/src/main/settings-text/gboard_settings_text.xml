@@ -3226,6 +3226,10 @@
         <translation locale="en">Paste</translation>
         <translation locale="zh-Hant">貼上</translation>
     </string>
+    <string name="gboard_edit_ap_error">
+        <translation locale="en">Failed to load editing buttons settings.</translation>
+        <translation locale="zh-Hant">無法載入編輯按鈕設定。</translation>
+    </string>
     <string name="gboard_patches_z_patches_title">
         <translation locale="en">z-patches</translation>
         <translation locale="zh-Hant">z-patches</translation>
