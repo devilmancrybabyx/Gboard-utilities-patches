@@ -117,18 +117,18 @@ public final class GboardPinsRuntime {
         if (corpusItem == null) return false;
         try {
             for (Field field : corpusItem.getClass().getDeclaredFields()) {
-                if ("ppa".equals(field.getType().getSimpleName())
-                        || "ppa".equals(field.getType().getName())) {
-                    field.setAccessible(true);
-                    Object kbType = field.get(corpusItem);
-                    if (kbType != null) {
-                        for (Field nameField : kbType.getClass().getDeclaredFields()) {
-                            if (nameField.getType() == String.class) {
-                                nameField.setAccessible(true);
-                                String name = (String) nameField.get(kbType);
-                                if (PINS_KEYBOARD_DATA.equals(name)) {
-                                    return true;
-                                }
+                field.setAccessible(true);
+                Object val = field.get(corpusItem);
+                if (val != null) {
+                    if (PINS_KEYBOARD_DATA.equals(val.toString())) {
+                        return true;
+                    }
+                    for (Field nameField : val.getClass().getDeclaredFields()) {
+                        if (nameField.getType() == String.class) {
+                            nameField.setAccessible(true);
+                            String name = (String) nameField.get(val);
+                            if (PINS_KEYBOARD_DATA.equals(name)) {
+                                return true;
                             }
                         }
                     }
@@ -190,21 +190,23 @@ public final class GboardPinsRuntime {
     }
 
     private static ViewGroup findExpressionBodyContainer(View rootView) {
-        Context context = rootView.getContext();
-        int[] candidateIds = new int[]{
-                context.getResources().getIdentifier("expression_body_container", "id", context.getPackageName()),
-                context.getResources().getIdentifier("keyboard_body_view_holder", "id", context.getPackageName()),
-                context.getResources().getIdentifier("keyboard_header_view_holder", "id", context.getPackageName())
-        };
-        for (int id : candidateIds) {
-            if (id != 0) {
-                View found = rootView.findViewById(id);
-                if (found instanceof ViewGroup vg) {
-                    return vg;
+        if (rootView instanceof ViewGroup vg) {
+            View candidate = rootView.findViewWithTag(".keyboard-body-area");
+            if (candidate instanceof ViewGroup cvg) {
+                return cvg;
+            }
+            candidate = rootView.findViewWithTag(".keyboard-base-area");
+            if (candidate instanceof ViewGroup cvg) {
+                return cvg;
+            }
+            Context context = rootView.getContext();
+            int holderId = context.getResources().getIdentifier("keyboard_holder", "id", context.getPackageName());
+            if (holderId != 0) {
+                View found = rootView.findViewById(holderId);
+                if (found instanceof ViewGroup hvg) {
+                    return hvg;
                 }
             }
-        }
-        if (rootView instanceof ViewGroup vg) {
             return vg;
         }
         return null;
@@ -225,6 +227,6 @@ public final class GboardPinsRuntime {
             } catch (Throwable ignored) {
             }
         }
-        return null;
+        return dev.jason.gboardpatches.extension.customgallery.GboardCustomGalleryRuntime.getActiveService();
     }
 }

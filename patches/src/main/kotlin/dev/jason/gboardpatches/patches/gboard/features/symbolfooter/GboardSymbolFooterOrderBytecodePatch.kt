@@ -1,6 +1,7 @@
 package dev.jason.gboardpatches.patches.gboard.features.symbolfooter
 
 import app.morphe.patcher.extensions.InstructionExtensions.addInstructions
+import app.morphe.patcher.patch.BytecodePatchContext
 import app.morphe.patcher.patch.bytecodePatch
 import app.morphe.patcher.util.proxy.mutableTypes.MutableMethod
 import app.morphe.patcher.util.proxy.mutableTypes.MutableMethod.Companion.toMutable
@@ -15,6 +16,7 @@ import dev.jason.gboardpatches.patches.gboard.shared.GboardExpressionCorpusPatch
 import dev.jason.gboardpatches.patches.gboard.shared.VerifiedTransformationPlan
 import dev.jason.gboardpatches.patches.gboard.shared.VerifiedTransformationState
 import dev.jason.gboardpatches.patches.gboard.shared.applyVerified
+import dev.jason.gboardpatches.patches.gboard.shared.findMutableMethodOrThrow
 import dev.jason.gboardpatches.patches.gboard.shared.gboardPatchesExtensionCarrierPatch
 import dev.jason.gboardpatches.patches.gboard.shared.isInvoke
 import dev.jason.gboardpatches.patches.gboard.shared.isMethodReference
@@ -28,9 +30,12 @@ import dev.jason.gboardpatches.patches.gboard.shared.runtimeabi.RuntimeCallEmitt
 import dev.jason.gboardpatches.patches.gboard.shared.runtimeabi.RuntimeCallId
 
 private const val EXPRESSION_CORPUS_MANAGER_CLASS = "Lgri;"
+private const val FOOTER_TAB_CLICK_CONSUMER_CLASS = "Lgrm;"
+private const val SCROLLABLE_NAVIGATION_VIEW_CLASS =
+    "Lcom/google/android/apps/inputmethod/libs/expression/navbar/ScrollableNavigationView;"
 
 internal val gboardSymbolFooterOrderBytecodePatch = bytecodePatch(
-    description = "依使用者設定重排 expression footer corpus list。"
+    description = "依使用者設定重排 expression footer corpus list 並攔截分頁點擊。",
 ) {
     dependsOn(gboardPatchesExtensionCarrierPatch)
 
@@ -51,6 +56,8 @@ internal val gboardSymbolFooterOrderBytecodePatch = bytecodePatch(
                 "Could not replace expanded $TARGET_DESCRIPTOR"
             }
         }
+
+        patchFooterTabClick()
     }
 }
 
@@ -254,3 +261,47 @@ private const val LEGACY_P2_REGISTER = 14
 private const val PATCHED_P0_REGISTER = 15
 private const val PATCHED_P1_REGISTER = 16
 private const val PATCHED_P2_REGISTER = 17
+
+private val FOOTER_TAB_CLICK_DELEGATE = """
+    ${RuntimeCallEmitter.invoke(RuntimeCallId.ADD_SYMBOLS_RUNTIME_ON_EXPRESSION_CORPUS_FOOTER_TAB_CLICK, "p0, p1")}
+""".trimIndent()
+
+private fun BytecodePatchContext.patchFooterTabClick() {
+    var targetClass: String? = null
+    try {
+        val direct = mutableClass(FOOTER_TAB_CLICK_CONSUMER_CLASS)
+        if (direct.methods.any { it.name == "accept" && it.parameterTypes == listOf("Ljava/lang/Object;") }) {
+            targetClass = FOOTER_TAB_CLICK_CONSUMER_CLASS
+        }
+    } catch (_: Throwable) {
+    }
+
+    if (targetClass == null) {
+        classDefForEach { classDef ->
+            if (targetClass == null && classDef.fields.any { it.type == SCROLLABLE_NAVIGATION_VIEW_CLASS }) {
+                if (classDef.methods.any { it.name == "accept" && it.parameterTypes == listOf("Ljava/lang/Object;") }) {
+                    targetClass = classDef.type
+                }
+            }
+        }
+    }
+
+    val className = checkNotNull(targetClass) {
+        "Could not find footer tab click consumer class"
+    }
+
+    val mutableMethod = findMutableMethodOrThrow(
+        classType = className,
+        name = "accept",
+        returnType = "V",
+        parameterTypes = listOf("Ljava/lang/Object;")
+    )
+    val runtimeRef = RuntimeAbiCatalog.abi(RuntimeCallId.ADD_SYMBOLS_RUNTIME_ON_EXPRESSION_CORPUS_FOOTER_TAB_CLICK).reference
+    val alreadyPatched = mutableMethod.implementation?.instructions?.any {
+        it.isMethodReference(runtimeRef)
+    } == true
+    if (!alreadyPatched) {
+        mutableMethod.addInstructions(0, FOOTER_TAB_CLICK_DELEGATE)
+    }
+}
+

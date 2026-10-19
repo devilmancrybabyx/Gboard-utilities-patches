@@ -1,7 +1,7 @@
 {
     "created_at":  "2026-10-15T00:00:00",
     "description":  "### ✨ New Features\n\n* **Recent Stickers & GIFs Limit:** Remove the 10-item limit for recent stickers and GIFs so all stores read `recent_content_suggestion_share_max_count`.\n* **Custom Gallery for GIFs & Stickers:** Add a dedicated custom media section inside Gboard's emoji/stickers/GIFs panel with category management, system photo picker import, and instant image commit/share via FileProvider.\n* **Pins (Pinterest):** Add a dedicated Pins tab next to GIFs and Stickers with Pinterest search, history chips, related pins on card click, and quick send button.\n* **z-patches Settings:** Centralized settings dashboard placed at the very bottom of Gboard's main settings menu to manage the recent limit, gallery toggle, pins toggle, and categories.",
-    "download_url":  "https://github.com/devilmancrybabyx/Gboard-utilities-patches/releases/download/v3.13.0/patches-3.13.0.mpp",
+    "download_url":  "https://github.com/devilmancrybabyx/Gboard-utilities-patches/releases/download/v3.13.1/patches-3.13.1.mpp",
     "signature_download_url":  "",
-    "version":  "3.13.0"
+    "version":  "3.13.1"
 }

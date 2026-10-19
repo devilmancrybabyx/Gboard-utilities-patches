@@ -142,18 +142,18 @@ public final class GboardCustomGalleryRuntime {
         if (corpusItem == null) return false;
         try {
             for (Field field : corpusItem.getClass().getDeclaredFields()) {
-                if ("ppa".equals(field.getType().getSimpleName())
-                        || "ppa".equals(field.getType().getName())) {
-                    field.setAccessible(true);
-                    Object kbType = field.get(corpusItem);
-                    if (kbType != null) {
-                        for (Field nameField : kbType.getClass().getDeclaredFields()) {
-                            if (nameField.getType() == String.class) {
-                                nameField.setAccessible(true);
-                                String name = (String) nameField.get(kbType);
-                                if (CUSTOM_GALLERY_KEYBOARD_DATA.equals(name)) {
-                                    return true;
-                                }
+                field.setAccessible(true);
+                Object val = field.get(corpusItem);
+                if (val != null) {
+                    if (CUSTOM_GALLERY_KEYBOARD_DATA.equals(val.toString())) {
+                        return true;
+                    }
+                    for (Field nameField : val.getClass().getDeclaredFields()) {
+                        if (nameField.getType() == String.class) {
+                            nameField.setAccessible(true);
+                            String name = (String) nameField.get(val);
+                            if (CUSTOM_GALLERY_KEYBOARD_DATA.equals(name)) {
+                                return true;
                             }
                         }
                     }
@@ -216,10 +216,21 @@ public final class GboardCustomGalleryRuntime {
 
     private static ViewGroup findExpressionBodyContainer(View rootView) {
         if (rootView instanceof ViewGroup vg) {
-            // Find appropriate container for expression body
-            View candidate = rootView.findViewWithTag(".keyboard-base-area");
+            View candidate = rootView.findViewWithTag(".keyboard-body-area");
             if (candidate instanceof ViewGroup cvg) {
                 return cvg;
+            }
+            candidate = rootView.findViewWithTag(".keyboard-base-area");
+            if (candidate instanceof ViewGroup cvg) {
+                return cvg;
+            }
+            Context context = rootView.getContext();
+            int holderId = context.getResources().getIdentifier("keyboard_holder", "id", context.getPackageName());
+            if (holderId != 0) {
+                View found = rootView.findViewById(holderId);
+                if (found instanceof ViewGroup hvg) {
+                    return hvg;
+                }
             }
             return vg;
         }
