@@ -15,16 +15,16 @@ class GboardPublishedPatchCatalogContractTest {
         assertTrue(registrations.isNotEmpty())
         assertEquals(registrations.size, registrations.map { patch -> patch.name }.distinct().size)
         assertSame(
-            gboardInlineSuggestionsFlagPatch,
-            registrations.single { patch -> patch.name == "Inline Suggestions" },
+            gboardRecentImagesLimitPatch,
+            registrations.single { patch -> patch.name == "Recent Stickers & GIFs Limit" },
         )
         assertSame(
-            gboardSignatureBypassPatch,
-            registrations.single { patch -> patch.name == "Add Gboard Signature Bypass" },
+            gboardCustomGalleryPatch,
+            registrations.single { patch -> patch.name == "Custom Gallery for GIFs & Stickers" },
         )
         assertSame(
-            gboardOcrScanTextPatch,
-            registrations.single { patch -> patch.name == "Enable OCR / Scan Text" },
+            gboardPinsPatch,
+            registrations.single { patch -> patch.name == "Pins (Pinterest)" },
         )
     }
 
@@ -41,23 +41,17 @@ class GboardPublishedPatchCatalogContractTest {
             patches.map { patch -> patch.get("name").asString },
         )
 
-        val inlineSuggestions = patches.single { patch ->
-            patch.get("name").asString == "Inline Suggestions"
+        val recentImagesLimit = patches.single { patch ->
+            patch.get("name").asString == "Recent Stickers & GIFs Limit"
         }
-        assertTrue(inlineSuggestions.get("use").asBoolean)
-        assertEquals(
-            emptyList<String>(),
-            inlineSuggestions.getAsJsonArray("dependencies").map { dependency ->
-                dependency.asString
-            },
-        )
+        assertTrue(recentImagesLimit.get("use").asBoolean)
         assertEquals(
             listOf("18.0.3.954559732-release-arm64-v8a"),
-            inlineSuggestions.getAsJsonObject("compatiblePackages")
+            recentImagesLimit.getAsJsonObject("compatiblePackages")
                 .getAsJsonArray("com.google.android.inputmethod.latin")
                 .map { version -> version.asString },
         )
-        assertTrue(inlineSuggestions.getAsJsonArray("options").isEmpty)
+        assertTrue(recentImagesLimit.getAsJsonArray("options").isEmpty)
     }
 
     @Test

@@ -118,16 +118,18 @@ private fun MutableMethod.classifyRecentImagesLimit(): VerifiedTransformationSta
         val (hashIndex, ifEqIndex) = hashCheckPair
         val hashInst = instructions[hashIndex]
         val ifEqInst = instructions[ifEqIndex] as? TwoRegisterInstruction
-        val preEqualsInst = instructions[equalsCallIndex - 1]
 
         val isHashPatched = hashInst.isOpcode("MOVE") &&
             hashInst is TwoRegisterInstruction &&
             ifEqInst != null &&
             (hashInst.registerA == ifEqInst.registerA || hashInst.registerA == ifEqInst.registerB)
 
-        val isEqualsPatched = preEqualsInst.isOpcode("MOVE_OBJECT_FROM16") &&
-            preEqualsInst is TwoRegisterInstruction &&
-            preEqualsInst.registerB == p2
+        val isEqualsPatched = (maxOf(0, equalsCallIndex - 8) until equalsCallIndex).any { idx ->
+            val inst = instructions[idx]
+            inst.isOpcode("MOVE_OBJECT_FROM16") &&
+                inst is TwoRegisterInstruction &&
+                inst.registerB == p2
+        }
 
         if (isHashPatched && isEqualsPatched && !hasStockHashLiteral && !hasStockStringRef) {
             return VerifiedTransformationState.PATCHED
@@ -156,17 +158,17 @@ private fun MutableMethod.mutateRecentImagesLimit() {
         ?: error("Instruction at $hashIndex is not OneRegisterInstruction")
     val vB = hashConstInstruction.registerA
 
-    val ifEqInstruction = instructions[hashIndex + 1]
-    check(ifEqInstruction.isOpcode("IF_EQ") && ifEqInstruction is TwoRegisterInstruction) {
-        "Expected if-eq instruction immediately following const at ${hashIndex + 1}, found ${ifEqInstruction.opcode.name}"
-    }
+    val ifEqIndex = (hashIndex + 1 until minOf(hashIndex + 8, instructions.size)).firstOrNull { idx ->
+        val inst = instructions[idx]
+        inst.isOpcode("IF_EQ") && inst is TwoRegisterInstruction &&
+            (inst.registerA == vB || inst.registerB == vB)
+    } ?: error("Could not find if-eq instruction comparing register v$vB within 8 instructions after const at index $hashIndex in $definingClass->$name")
 
+    val ifEqInstruction = instructions[ifEqIndex] as TwoRegisterInstruction
     val vA = if (ifEqInstruction.registerA == vB) {
         ifEqInstruction.registerB
-    } else if (ifEqInstruction.registerB == vB) {
-        ifEqInstruction.registerA
     } else {
-        error("Neither register of if-eq (${ifEqInstruction.registerA}, ${ifEqInstruction.registerB}) matches vB ($vB)")
+        ifEqInstruction.registerA
     }
 
     // 2. Locate and transform equals check
@@ -182,8 +184,8 @@ private fun MutableMethod.mutateRecentImagesLimit() {
         ?: error("Instruction at $stringIndex is not OneRegisterInstruction")
     val vC = stringInstruction.registerA
 
-    // Verify equals follows stringIndex
-    val nextInvoke = instructions.drop(stringIndex + 1).take(3).firstOrNull { instruction ->
+    // Verify equals follows stringIndex within a reasonable window
+    val nextInvoke = instructions.drop(stringIndex + 1).take(8).firstOrNull { instruction ->
         instruction.opcode.name.startsWith("INVOKE") &&
             ((instruction as? ReferenceInstruction)?.reference as? MethodReference)?.name == EQUALS_METHOD_NAME
     }
@@ -197,11 +199,20 @@ private fun MutableMethod.mutateRecentImagesLimit() {
 }
 
 private fun findHashCheckPair(instructions: List<com.android.tools.smali.dexlib2.iface.instruction.Instruction>): Pair<Int, Int>? {
-    for (i in 0 until instructions.lastIndex) {
-        if (instructions[i + 1].isOpcode("IF_EQ")) {
-            val prev = instructions[i]
-            if (prev.isOpcode("CONST") || prev.isOpcode("MOVE")) {
-                return Pair(i, i + 1)
+    for (i in instructions.indices) {
+        val inst = instructions[i]
+        if (inst.isOpcode("CONST") || inst.isOpcode("MOVE")) {
+            val reg = (inst as? OneRegisterInstruction)?.registerA
+                ?: (inst as? TwoRegisterInstruction)?.registerA
+            if (reg != null) {
+                for (j in (i + 1) until minOf(i + 8, instructions.size)) {
+                    val next = instructions[j]
+                    if (next.isOpcode("IF_EQ") && next is TwoRegisterInstruction &&
+                        (next.registerA == reg || next.registerB == reg)
+                    ) {
+                        return Pair(i, j)
+                    }
+                }
             }
         }
     }

@@ -104,10 +104,11 @@ public final class GboardCustomGalleryRuntime {
 
             Object rebuilt = immutableListCopyOf.invoke(null, updatedList);
             Log.i(TAG, "Appended custom gallery corpus tab at index " + insertIndex);
-            return rebuilt != null ? rebuilt : corpusList;
+            Object withPins = dev.jason.gboardpatches.extension.pins.GboardPinsRuntime.appendPinsCorpusItem(receiver, rebuilt != null ? rebuilt : corpusList);
+            return withPins != null ? withPins : (rebuilt != null ? rebuilt : corpusList);
         } catch (Throwable t) {
             Log.w(TAG, "Failed to append custom gallery corpus item", t);
-            return corpusList;
+            return dev.jason.gboardpatches.extension.pins.GboardPinsRuntime.appendPinsCorpusItem(receiver, corpusList);
         }
     }
 
@@ -116,6 +117,13 @@ public final class GboardCustomGalleryRuntime {
             return;
         }
         try {
+            boolean isPins = dev.jason.gboardpatches.extension.pins.GboardPinsRuntime.onExpressionCorpusFooterTabClick(footerTabClickConsumer, corpusItem);
+            if (isPins) {
+                hideGalleryView();
+                return;
+            }
+            dev.jason.gboardpatches.extension.pins.GboardPinsRuntime.hidePinsView();
+
             boolean isGalleryTab = isCustomGalleryCorpusItem(corpusItem);
             View rootView = findRootView(footerTabClickConsumer);
 

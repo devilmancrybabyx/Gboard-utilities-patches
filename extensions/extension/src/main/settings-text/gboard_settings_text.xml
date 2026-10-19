@@ -3282,8 +3282,24 @@
         <translation locale="en">Add images from gallery</translation>
         <translation locale="zh-Hant">從手機相簿新增圖片</translation>
     </string>
-    <string name="gboard_patches_custom_gallery_add_image_summary">
-        <translation locale="en">Import pictures via system photo picker into active category.</translation>
-        <translation locale="zh-Hant">透過系統相片選擇器將圖片匯入目前分類。</translation>
+    <string name="gboard_patches_pins_section">
+        <translation locale="en">Pins (Pinterest)</translation>
+        <translation locale="zh-Hant">Pins (Pinterest)</translation>
+    </string>
+    <string name="gboard_patches_pins_enabled_title">
+        <translation locale="en">Show Pins tab</translation>
+        <translation locale="zh-Hant">顯示 Pins 分頁</translation>
+    </string>
+    <string name="gboard_patches_pins_enabled_summary">
+        <translation locale="en">Show dedicated Pinterest tab in emoji/stickers/GIFs panel.</translation>
+        <translation locale="zh-Hant">在表情符號/貼圖/GIF 面板中顯示專屬 Pinterest 分頁。</translation>
+    </string>
+    <string name="gboard_patches_pins_clear_history_title">
+        <translation locale="en">Clear Pins search history</translation>
+        <translation locale="zh-Hant">清除 Pins 搜尋紀錄</translation>
+    </string>
+    <string name="gboard_patches_pins_clear_history_summary">
+        <translation locale="en">Remove all saved Pinterest search queries.</translation>
+        <translation locale="zh-Hant">刪除所有已儲存的 Pinterest 搜尋關鍵字。</translation>
     </string>
 </settings-text>

@@ -15,6 +15,7 @@ import java.util.List;
 import dev.jason.gboardpatches.extension.R;
 import dev.jason.gboardpatches.extension.customgallery.GboardCustomGallerySettings;
 import dev.jason.gboardpatches.extension.customgallery.GboardCustomGalleryStorage;
+import dev.jason.gboardpatches.extension.pins.GboardPinsSettings;
 import dev.jason.gboardpatches.extension.recentimageslimit.GboardRecentImagesLimitSettings;
 import dev.jason.gboardpatches.extension.settings.GboardPatchesSettingsContract;
 import dev.jason.gboardpatches.extension.settings.GboardSettingsText;
@@ -29,7 +30,7 @@ public final class GboardZPatchesSettingsFeature implements GboardPatchesSetting
 
     @Override
     public String getEntrySummary() {
-        return "Recent stickers & GIFs limit and Custom Gallery settings.";
+        return "Recent stickers & GIFs limit, Custom Gallery, and Pins settings.";
     }
 
     @Override
@@ -95,11 +96,39 @@ public final class GboardZPatchesSettingsFeature implements GboardPatchesSetting
                 GboardSettingsText.get(context, R.string.gboard_patches_custom_gallery_section),
                 Collections.unmodifiableList(galleryRows)));
 
+        // 3. Pins (Pinterest) Section
+        List<GboardPatchesSettingsContract.Row> pinsRows = new ArrayList<GboardPatchesSettingsContract.Row>();
+        boolean pinsEnabled = GboardPinsSettings.isPinsEnabled(context);
+
+        pinsRows.add(new GboardPatchesSettingsContract.ToggleRow(
+                GboardSettingsText.get(context, R.string.gboard_patches_pins_enabled_title),
+                GboardSettingsText.get(context, R.string.gboard_patches_pins_enabled_summary),
+                pinsEnabled,
+                true,
+                enabled -> {
+                    GboardPinsSettings.setPinsEnabled(context, enabled);
+                    GboardPatchesSettingsContract.refresh(host);
+                }));
+
+        pinsRows.add(new GboardPatchesSettingsContract.ActionRow(
+                GboardSettingsText.get(context, R.string.gboard_patches_pins_clear_history_title),
+                GboardSettingsText.get(context, R.string.gboard_patches_pins_clear_history_summary),
+                pinsEnabled,
+                () -> {
+                    GboardPinsSettings.clearSearchHistory(context);
+                    Toast.makeText(context, "Pins search history cleared", Toast.LENGTH_SHORT).show();
+                    GboardPatchesSettingsContract.refresh(host);
+                }));
+
+        sections.add(new GboardPatchesSettingsContract.Section(
+                GboardSettingsText.get(context, R.string.gboard_patches_pins_section),
+                Collections.unmodifiableList(pinsRows)));
+
         return new GboardPatchesSettingsContract.Screen(
                 "z-patches",
                 "z-patches",
                 "z-patches",
-                "Recent stickers & GIFs limit and Custom Gallery settings.",
+                "Recent stickers & GIFs limit, Custom Gallery, and Pins settings.",
                 Collections.emptyList(),
                 Collections.unmodifiableList(sections));
     }

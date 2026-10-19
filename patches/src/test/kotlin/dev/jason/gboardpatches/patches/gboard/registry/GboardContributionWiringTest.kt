@@ -5,7 +5,7 @@ import dev.jason.gboardpatches.patches.gboard.shared.generated.GboardTargetAdmis
 import java.nio.file.Files
 import java.nio.file.Path
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertThrows
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class GboardContributionWiringTest {
@@ -29,30 +29,9 @@ class GboardContributionWiringTest {
     }
 
     @Test
-    fun `independent execution units can be admitted without sibling mutations`() {
-        assertEquals(
-            setOf("zhuyin_slide_input.soft_key"),
-            GboardContributionWiring.activeContributionIds(
-                "zhuyin_slide_input",
-                setOf("zhuyin_slide_input.soft_key"),
-            ),
-        )
-        assertEquals(
-            setOf("long_press_editing_shortcuts.pointer"),
-            GboardContributionWiring.activeContributionIds(
-                "long_press_editing_shortcuts",
-                setOf("long_press_editing_shortcuts.pointer"),
-            ),
-        )
-    }
-
-    @Test
-    fun `indivisible shared patch stages fail closed when partially admitted`() {
-        assertThrows(IllegalStateException::class.java) {
-            GboardContributionWiring.activeContributionIds(
-                "swipeable_custom_top_row",
-                setOf("swipeable_custom_top_row.soft_key"),
-            )
-        }
+    fun `single contribution features have empty multi contribution active ids`() {
+        assertTrue(GboardContributionWiring.activeContributionIds("custom_gallery", emptySet()).isEmpty())
+        assertTrue(GboardContributionWiring.activeContributionIds("pins", emptySet()).isEmpty())
+        assertTrue(GboardContributionWiring.activeContributionIds("recent_images_limit", emptySet()).isEmpty())
     }
 }
