@@ -50,7 +50,7 @@ class GboardPinsPatchContractTest {
         assertTrue(view.contains("GboardPinsView"))
         assertTrue(service.contains("pinterest.com"))
         assertTrue(storage.contains("pins_cache"))
-        assertTrue(settings.contains("gboard_pins_settings"))
+        assertTrue(settings.contains("gboard_patches_pins"))
     }
 
     private fun read(relative: String): String =

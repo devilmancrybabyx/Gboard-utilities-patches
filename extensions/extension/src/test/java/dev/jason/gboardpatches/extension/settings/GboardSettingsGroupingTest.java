@@ -172,12 +172,11 @@ public final class GboardSettingsGroupingTest {
         Assert.assertTrue(availabilitySource.contains(
                 "dev.jason.gboardpatches.feature.zhuyin_bottom_row_weight"));
         Assert.assertTrue(patchSource.contains(
-                "gboardLatinGlobeKeyIgnoreIntervalFeatureMarkerPatch"));
+                "gboardRecentImagesLimitFeatureMarkerPatch"));
         Assert.assertTrue(patchSource.contains(
-                "gboardEnglishUppercaseToggleFeatureMarkerPatch"));
-        Assert.assertTrue(patchSource.contains("gboardAiWritingToolsFeatureMarkerPatch"));
+                "gboardCustomGalleryFeatureMarkerPatch"));
         Assert.assertTrue(patchSource.contains(
-                "gboardZhuyinBottomRowWeightFeatureMarkerPatch"));
+                "gboardPinsFeatureMarkerPatch"));
     }
 
     @Test
