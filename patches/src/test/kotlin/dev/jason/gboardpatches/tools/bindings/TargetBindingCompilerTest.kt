@@ -182,14 +182,14 @@ internal object GboardVersionBindings {
         assertEquals(projection.kotlinSource, generated)
 
         val missing = JsonParser.parseString(profile).asJsonObject
-        missing.getAsJsonObject("bindings").remove("soft_key_bind")
+        missing.getAsJsonObject("bindings").remove("flag_bool_getter")
         assertThrows(IllegalArgumentException::class.java) {
             TargetBindingCompiler.compile(missing.toString(), requirements)
         }
         val unexpected = JsonParser.parseString(profile).asJsonObject
         unexpected.getAsJsonObject("bindings").add(
             "unexpected_binding",
-            unexpected.getAsJsonObject("bindings").get("soft_key_bind"),
+            unexpected.getAsJsonObject("bindings").get("flag_bool_getter"),
         )
         assertThrows(IllegalArgumentException::class.java) {
             TargetBindingCompiler.compile(unexpected.toString(), requirements)
@@ -281,7 +281,7 @@ internal object GboardVersionBindings {
 
     private companion object {
         const val AUTHORITATIVE_SOURCE_SHA256 =
-            "50d42e5df1848f6480f69c9abbed028aabf70c78e7cbc52e38b03d963f8a6528"
+            "ead9621255c5fe95e0d2159676ff882f982a7da3ae9aa52dc355c4114e688233"
         val BINDINGS_PATH = Path.of("src/main/resources/gboard/gboard-version-bindings.json")
         val BINDINGS_SCHEMA_PATH =
             Path.of("src/main/resources/gboard/gboard-version-bindings.schema.json")

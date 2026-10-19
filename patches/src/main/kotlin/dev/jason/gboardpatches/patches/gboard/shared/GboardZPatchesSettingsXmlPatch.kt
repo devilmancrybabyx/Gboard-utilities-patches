@@ -36,7 +36,7 @@ private fun applyZPatchesSettingsXmlPatch() = with(context) {
 private const val Z_PATCHES_CATEGORY_KEY = "z_patches_category"
 private const val Z_PATCHES_ENTRY_KEY = "z_patches_entry"
 private const val Z_PATCHES_TITLE = "z-patches"
-private const val Z_PATCHES_SUMMARY = "Recent stickers & GIFs limit, Custom Gallery"
+private const val Z_PATCHES_SUMMARY = "Recent stickers & GIFs limit, Custom Gallery, Pins"
 private const val HEADER_PREFERENCE_TAG =
     "com.google.android.libraries.inputmethod.settings.widget.HeaderPreference"
 

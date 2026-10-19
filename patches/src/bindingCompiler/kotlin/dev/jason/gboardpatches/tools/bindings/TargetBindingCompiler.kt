@@ -306,6 +306,24 @@ object TargetBindingCompiler {
             }
             if (binding.string("kind") != "type") append("    )\n")
         }
+        if (targetVersion == "18.0.3") {
+            LEGACY_GBOARD_1803_BINDING_KINDS.forEach { (name, expectedKind) ->
+                if (name !in bindingKinds) {
+                    append("\n    val `").append(name.toCamelCase()).append("`: ")
+                    append(
+                        when (expectedKind) {
+                            "method" -> "GboardMethodTarget"
+                            "field" -> "GboardFieldTarget"
+                            "type" -> "GboardTypeTarget"
+                            else -> error("Validated binding contract kind")
+                        },
+                    )
+                    append("\n        get() = error(")
+                    append("Binding $name is unavailable for this admitted target".kotlinLiteral())
+                    append(")\n")
+                }
+            }
+        }
         append("}\n")
     }
 
@@ -509,6 +527,46 @@ object TargetBindingCompiler {
     private val TYPE_SOURCE_COMPONENTS = setOf("owner", "parameter", "return", "field_type")
     private val PROFILE_KEYS = setOf("format", "target_version", "profile_version", "bindings")
     private val EXTERNAL_LINKAGE_KEYS = setOf("profile_sha256", "port_bundle_sha256")
+    private val LEGACY_GBOARD_1803_BINDING_KINDS = sortedMapOf(
+        "custom_theme_fragment_peer_field" to "field",
+        "custom_theme_launcher_launch" to "method",
+        "custom_theme_peer_context_field" to "field",
+        "custom_theme_peer_launcher_field" to "field",
+        "custom_theme_peer_result_handler" to "method",
+        "custom_theme_plus_handler" to "method",
+        "custom_theme_result_handler" to "method",
+        "custom_theme_validator" to "method",
+        "gesture_dispatch" to "method",
+        "gesture_dispatcher_type" to "type",
+        "gesture_stock_delegate_field" to "field",
+        "gesture_stock_dispatch" to "method",
+        "keyboard_completion_callback_type" to "type",
+        "keyboard_definition_type" to "type",
+        "keyboard_extension_manager" to "method",
+        "keyboard_provider_request" to "method",
+        "long_press_quick_actions_input_event" to "method",
+        "pointer_cancel" to "method",
+        "pointer_finish" to "method",
+        "pointer_owner" to "method",
+        "pointer_owner_type" to "type",
+        "pointer_pre_reset" to "method",
+        "pointer_reset" to "method",
+        "rounded_keyboard_admission" to "method",
+        "rounded_keyboard_radii_constructor" to "method",
+        "rounded_keyboard_radii_type" to "type",
+        "rounded_keyboard_radii_values_field" to "field",
+        "rounded_keyboard_radii_wrapper_first_parameter_field" to "field",
+        "rounded_keyboard_radii_wrapper_parameterized_constructor" to "method",
+        "rounded_keyboard_radii_wrapper_radii_field" to "field",
+        "rounded_keyboard_radii_wrapper_second_parameter_field" to "field",
+        "rounded_keyboard_radii_wrapper_simple_constructor" to "method",
+        "rounded_keyboard_radii_wrapper_type" to "type",
+        "rounded_keyboard_style_resolver" to "method",
+        "soft_key_bind" to "method",
+        "soft_key_metadata_type" to "type",
+        "soft_key_view_type" to "type",
+        "zhuyin_toggle_popup_action" to "method",
+    )
 }
 
 private val BINDING_NAME = Regex("[a-z][a-z0-9]*(?:_[a-z0-9]+)*")

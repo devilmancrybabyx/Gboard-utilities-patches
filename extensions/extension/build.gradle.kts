@@ -78,8 +78,8 @@ val generatedCustomThemeBindingsJavaDir = layout.buildDirectory.dir(
 )
 val customThemeBindingsOverride = providers.gradleProperty("gboardReviewedBindingsFile")
 val customThemeBindingsAuthority = objects.fileProperty().apply {
-    set(rootProject.layout.projectDirectory.file(
-        "patches/src/main/resources/gboard/gboard-version-bindings.json"
+    set(layout.projectDirectory.file(
+        "src/main/resources/custom-theme-bindings.json"
     ))
     if (customThemeBindingsOverride.isPresent) {
         set(layout.file(customThemeBindingsOverride.map { path -> file(path) }))
