@@ -1,9 +1,12 @@
 package dev.jason.gboardpatches.extension.calculator;
 
-import java.util.function.BooleanSupplier;
-
 /** Fail-closed execution for calculator lifecycle and view callback boundaries. */
 final class GboardCalculatorSafety {
+    @FunctionalInterface
+    interface BooleanSupplier {
+        boolean getAsBoolean();
+    }
+
     private GboardCalculatorSafety() {
     }
 

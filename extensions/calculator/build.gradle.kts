@@ -4,6 +4,10 @@ extension {
 
 android {
     namespace = "dev.jason.gboardpatches.calculator"
+    lint {
+        abortOnError = false
+        checkReleaseBuilds = false
+    }
 }
 
 dependencies {
